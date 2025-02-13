@@ -92,14 +92,26 @@ int main() {
 	  }
   }
   
+  int verseNum = verse->getIntegerValue();
+  bool verseValid = false;
+
+  if (verse != cgi.getElements().end()) {
+	  if (verseNum < 1) {
+		  cout << "<p> Verse number cannot be less than 1 </p>" << endl;
+	  }
+	  else if (verseNum > 176) {
+		  cout << "<p> Verse number cannot be higher than 176 </p>" << endl;
+	  }
+	  else {
+		  verseValid = true;
+	  }
+  }
+
   /* TO DO: PUT CODE HERE TO CALL YOUR BIBLE CLASS FUNCTIONS
    *        TO LOOK UP THE REQUESTED VERSES
    */
   //declare Bible object
   Bible webBible("/home/class/csc3004/Bibles/web-complete");
-
-  //get the verse number
-  int verseNum = verse->getIntegerValue();
 
   Ref ref = Ref(bookNum, chapterNum, verseNum);
   LookupResult result;
@@ -109,7 +121,7 @@ int main() {
 
   //most of the error checking is done within the lookup function itself
   //so after checking a few basic conditions, we'll call the function and see what it returns
-  if (bookValid == true && chapterValid == true) {
+  if (bookValid == true && chapterValid == true && verseValid == true) {
 	  retrievedVerse = webBible.lookup(ref, result);
 
 	  if (result == SUCCESS) {
@@ -139,16 +151,27 @@ int main() {
    * This string will be inserted as is inside a container on the web page, 
    * so we must include HTML formatting commands to make things look presentable!
    */
+
+  //get the number of verses to retrieve and display
+  int numVerses = nv->getIntegerValue();
+
   if (validInput) {
-	cout << "Search Type: <b>" << **st << "</b>" << endl;
-	cout << "<p>Your result: "
-		<< **book << " " << **chapter << ":" << **verse
-		<< "<em>" << **nv;
-		retrievedVerse.display();
-		cout << "</em></p>" << endl;
+
+	  cout << "Search Type: <b>" << **st << "</b>" << endl;
+	  cout << "<p>Your result: " << endl;
+
+		//output all of the verses the user requests
+		for (int i = 0; i < numVerses; i++) {
+			retrievedVerse.display();
+			cout << "</p>" << endl;
+
+			retrievedVerse = webBible.nextVerse(result);
+		}
   }
   else {
-	  cout << "<p>Invalid Input: <em>report the more specific problem.</em></p>" << endl;
+	  //result is returned and outputted earlier in program if it runs into an error
+	  //so it doesn't need to be output again here
+	  cout << "<p>Invalid Input</p>" << endl;
   }
   return 0;
 }
