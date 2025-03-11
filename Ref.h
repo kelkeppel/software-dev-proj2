@@ -2,7 +2,7 @@
 // Computer Science, MVNU
 //
 // Ref is a class for representing a Bible reference consisting of
-//    * integer book   - the book from 1 (Genesis) to 66 (Revalation)
+//    * integer book   - the book from 1 (Genesis) to 66 (Revelation)
 //    * integer chap   - the chapter number >1
 //    * integer verse  - he verse numner >1
 //
@@ -31,7 +31,7 @@ public:
    // REQUIRED Comparison: determine if two references are equal
    bool operator==(const Ref);
    // OPTIONAL: < and > comparisons for Ref objects might also be useful
-   bool operator<(const Ref);
+   bool operator<(const Ref&) const;
    bool operator>(const Ref);
    // REQUIRED: Display the reference on cout, example output: John 3:16
    void display();

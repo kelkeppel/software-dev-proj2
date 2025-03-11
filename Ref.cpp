@@ -3,7 +3,7 @@
 
 #include "Ref.h"
 #include <iostream>
-#include <string>
+
 #include <map>
 using namespace std;
 
@@ -71,7 +71,8 @@ bool Ref::operator==(const Ref r) {
 }
 
 // OPTIONAL: define < and > comparisons
-bool Ref::operator<(const Ref r) {
+bool Ref::operator<(const Ref& r) const
+{
     if (r.book < this->book) {
         return true;
     }

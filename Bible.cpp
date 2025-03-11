@@ -9,14 +9,19 @@
 #include <string>
 #include <stdio.h>
 #include <stdlib.h>
+#include <map>
 using namespace std;
 
 Bible::Bible() { // Default constructor
 	infile = "/home/class/csc3004/Bibles/web-complete";
+	buildRefIndex();
 }
 
 // Constructor – pass bible filename
-Bible::Bible(const string s) { infile = s; }
+Bible::Bible(const string s) {
+	infile = s;
+	buildRefIndex();
+ }
 
 // REQUIRED: lookup finds a given verse in this Bible
 Verse Bible::lookup(Ref ref, LookupResult& status) { 
@@ -215,4 +220,31 @@ Ref Bible::next(const Ref ref, LookupResult& status) {
 
 // OPTIONAL: Return the reference before the given ref
 Ref Bible::prev(const Ref ref, LookupResult& status) {
+}
+
+//create accessor for the ref index
+std::map<Ref, int> Bible::getRefIndex() {
+	return refIndex;
+}
+
+void Bible::buildRefIndex() {
+	int position;
+	string currentLine;
+
+	//open the file
+	instream.open(infile);
+
+	while (!instream.eof()) {
+		//get the position for each line
+		position = infile.tellg();
+		getline(infile, currentLine);
+
+		//parse the reference for each line
+		//afraid to mess something up by using a destructive function on the current line (even though it's theoretically fine, shouldn't affect file)
+		string copyOfCurrentLine = currentLine;
+		Ref currentRef = new Ref(GetNextToken(copyOfCurrentLine));
+
+		//add the ref and position to the map
+		refIndex.insert({ currentRef, position });
+	}
 }

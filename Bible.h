@@ -16,6 +16,7 @@
 #include <string>
 #include <stdio.h>
 #include <stdlib.h>
+#include <map>
 using namespace std;
 
 // status codes to be returned when looking up a reference
@@ -28,6 +29,7 @@ class Bible {	// A class to represent a version of the bible
    bool isOpen;			// true if file is open
    // OPTIONAL: you may add variables to keep track of
    // the current line and/or reference when scanning the file
+   std::map<Ref, int> refIndex;
 
  public:
    Bible();	// Default constructor
@@ -50,5 +52,11 @@ class Bible {	// A class to represent a version of the bible
    Ref next(const Ref ref, LookupResult& status);
    // OPTIONAL: Return the reference before the given parameter ref
    Ref prev(const Ref ref, LookupResult& status);
+   
+   //create the reference index
+   void buildRefIndex();
+
+   std::map<Ref, int> getRefIndex();
+
 };
 #endif //Bible_H
