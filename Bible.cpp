@@ -59,64 +59,24 @@ Verse Bible::lookup(Ref ref, LookupResult& status) {
 		return defaultVerse;
 	}
 
+	//get the verse
+	int requestedPos = refIndex[ref];
+
+	//jump to that position
+	instream.open(infile);
+	instream.clear();
+	instream.seekg(requestedPos, std::ios_base::beg);
+
+	//THIS IS THE PROBLEM CHILD LINE
+	getline(instream, currentLine);
+	aVerse = Verse(currentLine);
 
 	
 	//set boolean variables to determine when we've found the correct reference
 	bool chapterFound = false;
 	bool verseFound = false;
 
-	//loop through the file
-	while (keepSearching) {
-		//get the current line from the file
-		getline(instream, currentLine);
-		aVerse = Verse(currentLine);
-
-		//if the chapters and the book matches up, set chapFound = true
-		//if it goes to the next book and chapFound is still false, return no_chapter
-
-		//if the verse, chapter, and book match up, set verseFound = true, return the verse
-		//if it goes to the next chapter while verseFound is false, then return no_verse
-
-		//if it somehow gets to the eof without checking any of these conditions, return other status.
-
-
-		//if the current verse has reached the book that our reference is in
-		if (aVerse.getRef().getBook() == ref.getBook()) {
-			//if the current verse is in the right chapter
-			if (aVerse.getRef().getChap() == ref.getChap()) {
-				chapterFound = true;
-				//if it found the right verse
-				if (aVerse.getRef().getVerse() == ref.getVerse()) {
-					verseFound = true;
-					status = SUCCESS;
-					keepSearching = false;
-					return aVerse;
-				}
-
-			}
-			//if it went past the correct chapter and didn't find the verse
-			if (aVerse.getRef().getChap() > ref.getChap()) {
-				//if verseFound is still false after the point it should have been found
-				//then set status to no_verse and return
-				if (verseFound == false) {
-					status = NO_VERSE;
-					keepSearching = false;
-					return defaultVerse;
-				}
-			}
-		}
-		//if it went past the book that the chapter should have been found in,
-		//then set status to no_chapter and return
-		if ((aVerse.getRef().getBook() > ref.getBook())) {
-			if (chapterFound == false) {
-				status = NO_CHAPTER;
-				keepSearching = false;
-				return defaultVerse;
-			}
-		}
-	}
-		
-		return(defaultVerse);
+	return(aVerse);
 	}
 
 
@@ -228,23 +188,23 @@ std::map<Ref, int> Bible::getRefIndex() {
 }
 
 void Bible::buildRefIndex() {
-	int position;
+	instream.open(infile);
+	int position = instream.tellg();
+	cout << "tellg position: " << position << endl;
 	string currentLine;
 
-	//open the file
-	instream.open(infile);
-
-	while (!instream.eof()) {
-		//get the position for each line
-		position = infile.tellg();
-		getline(infile, currentLine);
+	while (getline(instream, currentLine)) {
+		//getline(infile, currentLine);
 
 		//parse the reference for each line
 		//afraid to mess something up by using a destructive function on the current line (even though it's theoretically fine, shouldn't affect file)
 		string copyOfCurrentLine = currentLine;
-		Ref currentRef = new Ref(GetNextToken(copyOfCurrentLine));
+		Ref currentRef = Ref(copyOfCurrentLine);
 
-		//add the ref and position to the map
 		refIndex.insert({ currentRef, position });
+
+		//get the next line's position
+			position = instream.tellg();
+
 	}
 }
