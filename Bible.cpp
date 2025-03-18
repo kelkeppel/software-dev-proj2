@@ -71,10 +71,7 @@ Verse Bible::lookup(Ref ref, LookupResult& status) {
 	getline(instream, currentLine);
 	aVerse = Verse(currentLine);
 
-	
-	//set boolean variables to determine when we've found the correct reference
-	bool chapterFound = false;
-	bool verseFound = false;
+	status = SUCCESS;
 
 	return(aVerse);
 	}
@@ -91,9 +88,10 @@ Verse Bible::nextVerse(LookupResult& status) {
 	if (instream.is_open() == false) {
 		instream.open(infile);
 	}
-	
+
 	//check that it hasn't reached the end
 	if (!instream.eof()) {
+
 		//get the next line
 		getline(instream, nextLine);
 		//make it into a verse
@@ -119,7 +117,7 @@ string Bible::error(LookupResult status) {
 		message = "There is no such verse";
 	}
 	else if (status == OTHER) {
-		message = "Something went wrong with refrence retrieval";
+		message = "Something went wrong with reference retrieval";
 	}
 
 	return message;
@@ -161,7 +159,7 @@ Ref Bible::next(const Ref ref, LookupResult& status) {
 	if (status == NO_CHAPTER) {
 		verse = 1;
 		chap = 1;
-		book++;;
+		book++;
 	}
 	//try again
 	nextVerse = lookup(Ref(book, chap, verse), status);

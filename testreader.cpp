@@ -28,7 +28,15 @@ int main(int argc, char** argv) {
 
 	cout << "enter book, chapter, verse" << endl;
 
-	if (argc == 4) {
+	if (argc == 5) {
+		//enter optional parameter of how many verses to show
+		verseCount = atoi(argv[4]);
+		b = atoi(argv[1]);
+		c = atoi(argv[2]);
+		v = atoi(argv[3]);
+	}
+
+	else if (argc == 4) {
 		b = atoi(argv[1]);
 		c = atoi(argv[2]);
 		v = atoi(argv[3]);
@@ -70,9 +78,22 @@ int main(int argc, char** argv) {
 	cout << "The byte offset of the last verse added to the index is: " << lastPos << endl;
 
 	//actually display the verse
+	if (verseCount == 1) {
+		verse = webBible.lookup(ref, result);
+		verse.display();
+		cout << endl;
+		cout << "Result status: " << webBible.error(result) << endl;
+	}
+	else {
+		verse = webBible.lookup(ref, result);
+
+		for (int i = 0; i < verseCount; i++) {
+			verse.display();
+
+			verse = webBible.nextVerse(result);
+			cout << endl;
+		}
+		cout << "Result status: " << webBible.error(result) << endl;
+	}
 	
-	//THIS LINE IS THE PROBLEM CHILD
-	verse = webBible.lookup(ref, result);
-	
-	verse.display();
 }

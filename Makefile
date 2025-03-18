@@ -17,18 +17,18 @@ USER= kelkeppel
 CC= g++
 CFLAGS= -g -std=c++11
 
-all: testreader # bibleajax.cgi # PutCGI PutHTML
+all: bibleajax.cgi LookupServer # PutCGI PutHTML
 
 # TO DO: add classes from Project 1 to be linked
 # in the executable for bibleajax.cgi
 
-#bibleajax.cgi:	bibleajax.o Bible.o Ref.o Verse.o
-#	$(CC) $(CFLAGS) -o bibleajax.cgi bibleajax.o Bible.o Ref.o Verse.o -lcgicc
+bibleajax.cgi:	bibleajax.o Bible.o Ref.o Verse.o
+	$(CC) $(CFLAGS) -o bibleajax.cgi bibleajax.o Bible.o Ref.o Verse.o -lcgicc
 	# -l option links with cgicc library
 
 
-#bibleajax.o:	bibleajax.cpp
-##	$(CC) $(CFLAGS) -c bibleajax.cpp
+bibleajax.o:	bibleajax.cpp
+	$(CC) $(CFLAGS) -c bibleajax.cpp
 
 # TO DO: copy actions to build classes from Project 1:
 # Bible.o, Ref.o, Verse.o
@@ -45,13 +45,17 @@ Verse.o : Ref.h Verse.h Verse.cpp
 Bible.o : Ref.h Verse.h Bible.h Bible.cpp
 	$(CC) $(CFLAGS) -c Bible.cpp
 
+fifo.o : Ref.h Verse.h Bible.h fifo.cpp
+	$(CC) $(CFLAGS) -c fifo.cpp
+
 #main program source
-testreader.o : Ref.h Verse.h Bible.h testreader.cpp
-	$(CC) $(CFLAGS) -c testreader.cpp
+LookupServer.o : Ref.h Verse.h Bible.h fifo.h LookupServer.cpp
+	$(CC) $(CFLAGS) -c LookupServer.cpp
 
 #build the executable
-testreader: Ref.o Verse.o Bible.o testreader.o
-	$(CC) $(CFLAGS) -o testreader Ref.o Verse.o Bible.o testreader.o
+LookupServer: Ref.o Verse.o Bible.o LookupServer.o fifo.o
+	$(CC) $(CFLAGS) -o LookupServer Ref.o Verse.o Bible.o fifo.o LookupServer.o
+
 
 #PutCGI:	bibleajax.cgi
 #		chmod 755 bibleajax.cgi

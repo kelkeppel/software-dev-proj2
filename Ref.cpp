@@ -98,7 +98,7 @@ bool Ref::operator<(const Ref& r) const
 }
 
 // TO DO: modify display function to show book name instead of book number
-void Ref::display() { 	// Display Reference
+string Ref::display() { 	// Display Reference
      map<int, string> booksOfBible = { {1, "Genesis"}, {2, "Exodus"}, {3, "Leviticus"},
          {4, "Numbers"}, {5, "Deuteronomy"}, {6, "Joshua"}, {7, "Judges"}, {8, "Ruth"},
          {9, "1 Samuel"}, {10, "2 Samuel"}, {11, "1 Kings"}, {12, "2 Kings"}, {13, "1 Chronicles"},
@@ -114,4 +114,5 @@ void Ref::display() { 	// Display Reference
          {58, "Hebrews"}, {59, "James"}, {60, "1 Peter"}, {61, "2 Peter"}, {62, "1 John"}, 
          {63, "2 John"}, {64, "3 John"}, {65, "Jude"}, {66, "Revelation"}};
      cout << booksOfBible[book] << ":" << chap << ":" << verse;
+     return booksOfBible[book];
 }
