@@ -32,15 +32,12 @@ Verse Bible::lookup(Ref ref, LookupResult& status) {
 	Verse aVerse;   // default verse, to be replaced by a Verse object
 	                // that is constructed from a line in the file.
 
-	//loop to keep reading in the line until the numbers at the start of the line
-	//match up with our reference
-	bool keepSearching = true;
-	string currentLine;
+	
 	//open the file
 	instream.open(infile);
 
 	//verse to return if no verse is found
-	Verse defaultVerse = Verse("No Verse Found");
+	Verse defaultVerse = Verse("There's No Verse Found");
 
 	//check if book number is within valid bounds
 	if (!(ref.getBook() > 0 && ref.getBook() <= 66)) {
@@ -60,21 +57,58 @@ Verse Bible::lookup(Ref ref, LookupResult& status) {
 	}
 
 	//get the verse
-	int requestedPos = refIndex[ref];
+	map<Ref, int>::iterator refIter = refIndex.find(ref);
+	int requestedPos;
 
-	//jump to that position
-	instream.open(infile);
-	instream.clear();
-	instream.seekg(requestedPos, std::ios_base::beg);
+	//if the reference is valid (can be found within the map), then read it in
+	if (refIter != refIndex.end()) {
+		requestedPos = refIter->second;
 
-	//THIS IS THE PROBLEM CHILD LINE
-	getline(instream, currentLine);
-	aVerse = Verse(currentLine);
+		//jump to that position
+		instream.open(infile);
+		instream.clear();
+		instream.seekg(requestedPos, std::ios_base::beg);
 
-	status = SUCCESS;
+		//jump to that position
+		instream.open(infile);
+		instream.clear();
+		instream.seekg(requestedPos, std::ios_base::beg);
 
-	return(aVerse);
+		//string to hold the current line we're reading in
+		string currentLine;
+
+		//if it succeeds in getting the line, then set status as success
+		if (getline(instream, currentLine)) {
+			aVerse = Verse(currentLine);
+			status = SUCCESS;
+		}
 	}
+	//If there's a problem with the reference, then check which part is wrong
+	else {
+		//create references with one or more parameter set to 1 (as we know every book has at least one chapter and at least one verse)
+		//to test which parameter is the issue
+		Ref chapterProblem = Ref(ref.getBook(), ref.getChap(), 1);
+		Ref verseProblem = Ref(ref.getBook(), 1, ref.getVerse());
+
+		//if it's not a problem with the book AND it's not a problem with the verse
+		//then we know it's a problem with the chapter
+		map<Ref, int>::iterator chapIter = refIndex.find(chapterProblem);
+		map<Ref, int>::iterator verseIter = refIndex.find(verseProblem);
+		if (chapIter == refIndex.end()) {
+			status = NO_CHAPTER;
+		}
+		else if(verseIter == refIndex.end()) {
+			status = NO_VERSE;
+		}
+		//if it's not one of those problems, then just return OTHER
+		else{
+			status = OTHER;
+		}
+	}
+
+	return aVerse;
+	
+}
 
 
 
