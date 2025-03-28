@@ -27,7 +27,7 @@
 #include <string>
 using namespace std;
 
-#define MaxMess 200
+#define MaxMess 1000
 
 // PATH changed from /tmp to special class directory for improved web security
 const string PATH  = "/home/class/csc3004/tmp/";

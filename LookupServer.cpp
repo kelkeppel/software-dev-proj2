@@ -12,8 +12,8 @@
 #include "fifo.h"
 using namespace std;
 
-string receivePipe = "request";
-string sendPipe = "reply";
+string requestPipe = "request";
+string replyPipe = "reply";
 
 int main(int argc, char** argv) {
 	// Create Bible object to process the raw text file
@@ -31,13 +31,13 @@ int main(int argc, char** argv) {
 	// TODO: your final program should get input from command line arguments instead.
 
 	//create the pipes
-	Fifo receiveFifo(receivePipe);
-	Fifo sendFifo(sendPipe);
+	Fifo requestFifo(requestPipe);
+	Fifo replyFifo(replyPipe);
 	while (true) {
 
 		//open and get the input from the pipe
-		receiveFifo.openread();
-		string message = receiveFifo.recv();
+		requestFifo.openread();
+		string message = requestFifo.recv();
 
 		//parse the input
 		string delim = ":";
@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
 		v = atoi(GetNextToken(message, delim).c_str());
 		verseCount = atoi(GetNextToken(message, delim).c_str());
 
-		receiveFifo.fifoclose();
+		requestFifo.fifoclose();
 
 		// Create a reference from the numbers
 		Ref ref(b, c, v);
@@ -61,7 +61,7 @@ int main(int argc, char** argv) {
 
 		//send the verse and it's status into the reply pipe
 		//open the pipe and create a string that will hold the message
-		sendFifo.openwrite();
+		replyFifo.openwrite();
 		string replyMessage = "";
 
 		//if there's just one verse, get that verse and assign it to the string
@@ -94,11 +94,11 @@ int main(int argc, char** argv) {
 			}
 			//if there was an error, then just return that
 			else {
-				replyMessage = webBible.error(result);
+				replyMessage = result + ":" + webBible.error(result);
 			}
 		}
 
-		sendFifo.send(replyMessage);
-		sendFifo.fifoclose();
+		replyFifo.send(replyMessage);
+		replyFifo.fifoclose();
 	}
 }

@@ -17,18 +17,18 @@ USER= kelkeppel
 CC= g++
 CFLAGS= -g -std=c++11
 
-all: bibleajax.cgi LookupServer # PutCGI PutHTML
+all: LookupClient LookupServer PutCGI PutHTML
 
 # TO DO: add classes from Project 1 to be linked
 # in the executable for bibleajax.cgi
 
-bibleajax.cgi:	bibleajax.o Bible.o Ref.o Verse.o
-	$(CC) $(CFLAGS) -o bibleajax.cgi bibleajax.o Bible.o Ref.o Verse.o -lcgicc
+#bibleajax.cgi:	bibleajax.o Bible.o Ref.o Verse.o
+#	$(CC) $(CFLAGS) -o bibleajax.cgi bibleajax.o Bible.o Ref.o Verse.o -lcgicc
 	# -l option links with cgicc library
 
 
-bibleajax.o:	bibleajax.cpp
-	$(CC) $(CFLAGS) -c bibleajax.cpp
+#bibleajax.o:	bibleajax.cpp
+#	$(CC) $(CFLAGS) -c bibleajax.cpp
 
 # TO DO: copy actions to build classes from Project 1:
 # Bible.o, Ref.o, Verse.o
@@ -56,19 +56,26 @@ LookupServer.o : Ref.h Verse.h Bible.h fifo.h LookupServer.cpp
 LookupServer: Ref.o Verse.o Bible.o LookupServer.o fifo.o
 	$(CC) $(CFLAGS) -o LookupServer Ref.o Verse.o Bible.o fifo.o LookupServer.o
 
+#program source
+LookupClient.o : fifo.h LookupClient.cpp
+	$(CC) $(CFLAGS) -c LookupClient.cpp
 
-#PutCGI:	bibleajax.cgi
-#		chmod 755 bibleajax.cgi
-#		cp bibleajax.cgi /var/www/html/class/csc3004/$(USER)/cgi-bin
+#Client executable
+LookupClient: LookupClient.o fifo.o
+	$(CC) $(CFLAGS) -o LookupClient LookupClient.o fifo.o -lcgicc
 
-#		echo "Current contents of your cgi-bin directory: "
-#		ls -l /var/www/html/class/csc3004/$(USER)/cgi-bin/
+PutCGI:	LookupClient
+		chmod 755 LookupClient
+		cp LookupClient /var/www/html/class/csc3004/$(USER)/cgi-bin
 
-#PutHTML:
-#		cp bibleajax.html /var/www/html/class/csc3004/$(USER)
+		echo "Current contents of your cgi-bin directory: "
+		ls -l /var/www/html/class/csc3004/$(USER)/cgi-bin/
 
-#		echo "Current contents of your HTML directory: "
-#		ls -l /var/www/html/class/csc3004/$(USER)
+PutHTML:
+		cp bibleindex.html /var/www/html/class/csc3004/$(USER)
+
+		echo "Current contents of your HTML directory: "
+		ls -l /var/www/html/class/csc3004/$(USER)
 
 clean:
-		rm *.o core bibleajax.cgi
+		rm *.o core LookupClient
